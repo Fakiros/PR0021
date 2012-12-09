@@ -1,0 +1,1 @@
+SRCLIB	+= $(USRLIB)/debug/hextable.c

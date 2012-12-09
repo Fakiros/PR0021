@@ -1,0 +1,14 @@
+include $(USRLIB)/conv/sources
+
+SRCLIB += $(USRLIB)/uart0/getchar0.c 
+SRCLIB += $(USRLIB)/uart0/getstr0.c
+SRCLIB += $(USRLIB)/uart0/init0.c
+SRCLIB += $(USRLIB)/uart0/putchar0.c
+SRCLIB += $(USRLIB)/uart0/putU08_0.c
+SRCLIB += $(USRLIB)/uart0/puthexU08_0.c
+SRCLIB += $(USRLIB)/uart0/puthexU16_0.c
+SRCLIB += $(USRLIB)/uart0/putint0.c
+SRCLIB += $(USRLIB)/uart0/putstr0.c
+SRCLIB += $(USRLIB)/uart0/putstr_E_0.c
+SRCLIB += $(USRLIB)/uart0/putstr_P_0.c
+SRCLIB += $(USRLIB)/uart0/rxlen0.c 

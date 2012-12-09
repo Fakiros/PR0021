@@ -1,0 +1,4 @@
+SRCLIB += $(USRLIB)/spi/init.c
+SRCLIB += $(USRLIB)/spi/send_byte.c
+SRCLIB += $(USRLIB)/spi/transfer_byte.c
+SRCLIB += $(USRLIB)/spi/transfer_word.c

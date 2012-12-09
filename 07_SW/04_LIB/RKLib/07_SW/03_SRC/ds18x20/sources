@@ -1,0 +1,14 @@
+include $(USRLIB)/onewire/sources
+
+SRCLIB	+= $(USRLIB)/ds18x20/copy_scratchpad.c
+SRCLIB	+= $(USRLIB)/ds18x20/find_sensor.c
+SRCLIB	+= $(USRLIB)/ds18x20/get_power_status.c
+SRCLIB	+= $(USRLIB)/ds18x20/meas_to_cel.c
+SRCLIB	+= $(USRLIB)/ds18x20/read_meas.c
+SRCLIB	+= $(USRLIB)/ds18x20/read_meas_single.c
+SRCLIB	+= $(USRLIB)/ds18x20/read_scratchpad.c
+SRCLIB	+= $(USRLIB)/ds18x20/recall_E2.c
+SRCLIB	+= $(USRLIB)/ds18x20/start_meas.c
+SRCLIB	+= $(USRLIB)/ds18x20/temp_cmp.c
+SRCLIB	+= $(USRLIB)/ds18x20/temp_to_decicel.c
+SRCLIB	+= $(USRLIB)/ds18x20/write_scratchpad.c

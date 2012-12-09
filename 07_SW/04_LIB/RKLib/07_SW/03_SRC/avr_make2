@@ -1,0 +1,212 @@
+# Przyk³adowy wspólny plik w³¹czany do makefile dla avr-gcc
+#
+# Wywo³anie programu make z linii komend:
+# make clean   <> czyœci projekt
+# make         <> kompiluje projekt
+# make install <> programuje uk³ad za pomoc¹ avrdude
+# ---------------------------------------------------------
+# Programowanie uk³adu w systemie (usun¹æ komenta¿ z odpowiedniej linii)
+PROG	= stk200
+#PROG	= stk500
+#PROG	= avr910
+# ---------------------------------------------------------
+# Konwersja ELF na COFF dla symulatora (usun¹æ komenta¿ z odpowiedniej linii)
+# AVR Studio 3.5x i VMLAB do v3.9:
+# COFFOUT = coff-avr
+# AVR Studio 4.x i VMLAB od v3.10:
+COFFOUT = coff-ext-avr
+# ---------------------------------------------------------
+
+# Opcje kompilatora
+CFLAGS += -g
+CFLAGS += -funsigned-char
+CFLAGS += -funsigned-bitfields
+CFLAGS += -fpack-struct
+CFLAGS += -fshort-enums
+CFLAGS += -Wall
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wa,-ahlms=$(<:.c=.lst)
+CFLAGS += -I$(USRLIB)
+CFLAGS += -O$(OPT)
+
+# Opcje asemblera
+ASFLAGS = -Wa,-ahlms=$(<:.asm=.lst),-gstabs 
+
+# Opcje linkera
+LDFLAGS += $(TARGET).a
+LDFLAGS += -Wl,-Map=$(TARGET).map,--cref
+
+# Definicje programów i komend.
+
+CC = avr-gcc
+OBJCOPY = avr-objcopy
+OBJDUMP = avr-objdump
+AR = avr-ar
+REMOVE = rm -f
+COPY = cp
+
+# ---------------------------------------------------------
+
+HEXSIZE = avr-size --target=ihex $(TARGET).hex
+ELFSIZE = avr-size $(TARGET).elf
+
+FINISH = echo Errors: none
+BEGIN = echo -------- begin --------
+END = echo --------  end  --------
+
+# ---------------------------------------------------------
+
+# Definicje plików obiektowych
+OBJ = $(SRC:.c=.o) $(ASRC:.asm=.o) 
+
+# ---------------------------------------------------------
+
+# Definicje plików z wygenerowanymi listingami
+LST = $(SRC:.c=.lst) $(ASRC:.asm=.lst) 
+
+# ---------------------------------------------------------
+
+# Definicje plików obiektowych bibliotek
+OBJLIB = $(SRCLIB:.c=.o) $(ASRCLIB:.asm=.o) 
+
+# ---------------------------------------------------------
+
+# Scala wszystkie opcje i prze³¹czniki. Dodaje typ procesora.
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
+ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+
+# ---------------------------------------------------------
+
+# Domyœlne wywo³anie
+all: begin sizebefore \
+$(TARGET).a \
+$(TARGET).elf \
+$(TARGET).lss \
+$(TARGET).hex \
+$(TARGET).eep \
+$(TARGET).cof \
+sizeafter finished end
+
+# ---------------------------------------------------------
+# Wyœwietlanie tekstów.
+begin:
+	@$(BEGIN)
+
+finished:
+	@$(FINISH)
+
+end:
+	@$(END)
+
+# ---------------------------------------------------------
+
+# Wyœwietla rozmiar kodu wynikowego
+sizebefore:
+	@if [ -f $(TARGET).elf ]; then echo Size before:; $(ELFSIZE);fi
+
+sizeafter:
+	@if [ -f $(TARGET).elf ]; then echo Size after:; $(ELFSIZE);fi
+
+# ---------------------------------------------------------
+
+# Wyœwietla informacjê na temat wersji kompilatora
+gccversion : 
+	$(CC) --version
+
+# ---------------------------------------------------------
+
+# Konwersja ELF na COFF dla symulacji w AVR Studio
+
+COFFCONVERT=$(OBJCOPY) --debugging \
+	--change-section-address .data-0x800000 \
+	--change-section-address .bss-0x800000 \
+	--change-section-address .noinit-0x800000 \
+	--change-section-address .eeprom-0x810000 
+
+%.cof: %.elf
+	$(COFFCONVERT) -O $(COFFOUT) $< $@
+
+# ---------------------------------------------------------
+
+# Tworzy pliki wynikowe (.hex, .eep) z pliku ELF.
+%.hex: %.elf
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
+
+%.eep: %.elf
+	$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O  ihex $< $@
+
+# ---------------------------------------------------------
+
+# Deasemblacja: Tworzy rozszerzony listing z pliku ELF.
+%.lss: %.elf
+	$(OBJDUMP) -h -S $< > $@
+
+# ---------------------------------------------------------
+
+# Konsolidacja: tworzy plik ELF z plików objektowych.
+%.elf: $(OBJ)
+	$(CC) -mmcu=$(MCU) $(OBJ) $(LDFLAGS) --output $@
+
+# ---------------------------------------------------------
+
+# Kompilacja: tworzy pliki objektowe z plików Ÿród³owych C.
+%.o : %.c 
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
+
+# ---------------------------------------------------------
+
+# Kompilacja: tworzy pliki asemblera z plików Ÿród³owych C.
+%.s : %.c
+	$(CC) -S $(ALL_CFLAGS) $< -o $@
+
+# ---------------------------------------------------------
+
+# Asemblacja: tworzy pliki objektowe z plików Ÿród³owych asemblera.
+%.o : %.asm
+	$(CC) -c $(ALL_ASFLAGS) $< -o $@
+
+# ---------------------------------------------------------
+
+# Tworzenie pliku biblioteki u¿ytkownika dla projektu
+%.a : $(OBJLIB)
+	$(AR) rc $@ $?
+
+# ---------------------------------------------------------
+
+# Czyœci projekt.
+clean: begin clean_list finished end
+
+clean_list :
+	$(REMOVE) $(SRC:.c=.s)
+	$(REMOVE) $(SRCLIB:.c=.s)
+	$(REMOVE) $(SRCLIB:.c=.lst)
+	$(REMOVE) $(OBJLIB)
+	$(REMOVE) $(OBJ)
+	$(REMOVE) $(LST)
+	$(REMOVE) $(TARGET).a
+	$(REMOVE) $(TARGET).hex
+	$(REMOVE) $(TARGET).eep
+	$(REMOVE) $(TARGET).obj
+	$(REMOVE) $(TARGET).cof
+	$(REMOVE) $(TARGET).elf
+	$(REMOVE) $(TARGET).map
+	$(REMOVE) $(TARGET).a90
+	$(REMOVE) $(TARGET).sym
+	$(REMOVE) $(TARGET).lnk
+	$(REMOVE) $(TARGET).lss
+
+# ---------------------------------------------------------
+
+# Programowanie uk³adu w systemie
+
+program: begin install end
+
+install:
+	avrdude -p $(MCU) -c $(PROG) -U flash:w:$(TARGET).hex -U eeprom:w:$(TARGET).eep
+
+# ---------------------------------------------------------
+
+# Zale¿noœci
+$(TARGET).a : $(CONFIG)
+$(TARGET).o : $(TARGET).c $(CONFIG)
+

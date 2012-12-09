@@ -1,0 +1,1 @@
+SRCLIB += $(USRLIB)/rtc/init.c

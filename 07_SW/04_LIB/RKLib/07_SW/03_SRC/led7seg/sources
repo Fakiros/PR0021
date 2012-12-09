@@ -1,0 +1,12 @@
+SRCLIB += $(USRLIB)/led7seg/chars.c
+SRCLIB += $(USRLIB)/led7seg/clear.c
+SRCLIB += $(USRLIB)/led7seg/init.c
+SRCLIB += $(USRLIB)/led7seg/out.c
+SRCLIB += $(USRLIB)/led7seg/putstr.c
+SRCLIB += $(USRLIB)/led7seg/putU08.c
+SRCLIB += $(USRLIB)/led7seg/putU16.c
+SRCLIB += $(USRLIB)/led7seg/putU32.c
+SRCLIB += $(USRLIB)/led7seg/key_read.c
+SRCLIB += $(USRLIB)/led7seg/key_pressed.c
+SRCLIB += $(USRLIB)/led7seg/shift_left.c
+SRCLIB += $(USRLIB)/led7seg/shift_right.c

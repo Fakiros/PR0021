@@ -1,0 +1,1 @@
+K:\Programy\Splint\bin\splint *.c

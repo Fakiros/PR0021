@@ -1,0 +1,2 @@
+SRCLIB	+= $(USRLIB)/adc_pwm/init.c
+SRCLIB	+= $(USRLIB)/adc_pwm/read.c

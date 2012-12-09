@@ -1,0 +1,3 @@
+SRCLIB += $(USRLIB)/twi/init.c
+SRCLIB += $(USRLIB)/twi/read.c
+SRCLIB += $(USRLIB)/twi/write.c

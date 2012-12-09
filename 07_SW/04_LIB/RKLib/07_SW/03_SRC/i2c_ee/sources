@@ -1,0 +1,5 @@
+include $(USRLIB)/i2c/sources
+
+SRCLIB += $(USRLIB)/i2c_ee/read_page.c
+SRCLIB += $(USRLIB)/i2c_ee/send_addr.c
+SRCLIB += $(USRLIB)/i2c_ee/write_page.c

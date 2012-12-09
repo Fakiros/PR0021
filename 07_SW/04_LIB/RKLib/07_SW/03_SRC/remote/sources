@@ -1,0 +1,3 @@
+SRCLIB += $(USRLIB)/remote/active.c
+SRCLIB += $(USRLIB)/remote/get.c
+SRCLIB += $(USRLIB)/remote/check.c

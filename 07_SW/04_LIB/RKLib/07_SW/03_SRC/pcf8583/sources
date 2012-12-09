@@ -1,0 +1,25 @@
+include $(USRLIB)/i2c/sources
+include $(USRLIB)/conv/sources
+
+SRCLIB += $(USRLIB)/pcf8583/alarm_on.c
+SRCLIB += $(USRLIB)/pcf8583/alarm_off.c
+SRCLIB += $(USRLIB)/pcf8583/get_alarm_date.c
+SRCLIB += $(USRLIB)/pcf8583/get_alarm_time.c
+SRCLIB += $(USRLIB)/pcf8583/get_date.c
+SRCLIB += $(USRLIB)/pcf8583/get_status.c
+SRCLIB += $(USRLIB)/pcf8583/get_time.c
+SRCLIB += $(USRLIB)/pcf8583/hold_off.c
+SRCLIB += $(USRLIB)/pcf8583/hold_on.c
+SRCLIB += $(USRLIB)/pcf8583/init.c
+SRCLIB += $(USRLIB)/pcf8583/read.c
+SRCLIB += $(USRLIB)/pcf8583/read_bcd.c
+SRCLIB += $(USRLIB)/pcf8583/set_alarm_date.c
+SRCLIB += $(USRLIB)/pcf8583/set_alarm_time.c
+SRCLIB += $(USRLIB)/pcf8583/set_date.c
+SRCLIB += $(USRLIB)/pcf8583/set_time.c
+SRCLIB += $(USRLIB)/pcf8583/start.c
+SRCLIB += $(USRLIB)/pcf8583/stop.c
+SRCLIB += $(USRLIB)/pcf8583/write.c
+SRCLIB += $(USRLIB)/pcf8583/write_bcd.c
+SRCLIB += $(USRLIB)/pcf8583/write_date.c
+SRCLIB += $(USRLIB)/pcf8583/write_word.c

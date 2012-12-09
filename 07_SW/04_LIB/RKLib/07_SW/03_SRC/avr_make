@@ -1,0 +1,259 @@
+# Przyk³adowy wspólny plik w³¹czany do makefile dla avr-gcc
+#
+# Wywo³anie programu make z linii komend:
+# make clean   <> czyœci projekt
+# make         <> kompiluje projekt
+# make install <> programuje uk³ad za pomoc¹ avrdude
+# ---------------------------------------------------------------------------
+# Programowanie uk³adu w systemie (usun¹æ komenta¿ z odpowiedniej linii)
+#PROG	= stk200
+PROG	= stk500
+#PROG	= avr910
+# ---------------------------------------------------------------------------
+# Konwersja ELF na COFF dla symulatora (usun¹æ komenta¿ z odpowiedniej linii)
+# AVR Studio 3.5x i VMLAB do v3.9:
+# COFFOUT = coff-avr
+# AVR Studio 4.x i VMLAB od v3.10:
+COFFOUT = coff-ext-avr
+# ---------------------------------------------------------------------------
+
+# Opcje kompilatora
+CFLAGS += -g
+CFLAGS += -funsigned-char
+CFLAGS += -funsigned-bitfields
+CFLAGS += -fpack-struct
+CFLAGS += -fshort-enums
+CFLAGS += -Wall
+CFLAGS += -Wstrict-prototypes
+CFLAGS += -Wa,-ahlms=$(<:$(SRC_FOLDER)/%.c=$(OBJ_FOLDER)/%.lst)
+CFLAGS += -I$(USRLIB)
+CFLAGS += -O$(OPT)
+CFLAGS += -ffunction-sections	#dzieli funkcje na sekcje (nie u¿ywane funkcje nie linkuje)
+CFLAGS += -fdata-sections	#dzieli dane na sekcje (nie u¿ywane dane nie linkuje)
+
+# Opcje asemblera
+ASFLAGS += -Wa,-ahlms=$(<:$(SRC_FOLDER)/%.S=$(OBJ_FOLDER)/%.lst),-gstabs
+ASFLAGS += -I$(USRLIB)
+
+# Opcje linkera
+#LDFLAGS += $(TARGET).a $(ASRCLIB:.S=.o)
+LDFLAGS += -Wl,-Map=$(TARGET).map,--cref, --gc-sections
+
+# Definicje programów i komend.
+
+CC = avr-gcc
+OBJCOPY = avr-objcopy
+OBJDUMP = avr-objdump
+AR = avr-ar
+REMOVE = rm -f
+COPY = cp
+
+# ---------------------------------------------------------------------------
+
+HEXSIZE = avr-size --target=ihex $(TARGET).hex
+ELFSIZE = avr-size $(TARGET).elf
+
+FINISH = echo Errors: none
+BEGIN = echo -------- begin -------- 
+END = echo -------- end --------
+CPY_ELF = $(COPY) $(TARGET).elf $(TARG).elf
+
+# ---------------------------------------------------------------------------
+
+# Definicje plików obiektowych
+
+OBJ = $(SRC:.c=.o) $(ASRC:.S=.o)
+
+
+OBJF = $(SRCF:%.c=%.o)
+OBJE = $(SRCF:%.c=$(OBJ_FOLDER)/%.o)
+LST = $(SRCF:%.c=$(OBJ_FOLDER)/%.lst)
+
+
+# ---------------------------------------------------------------------------
+
+# Definicje plików z wygenerowanymi listingami
+#LST = $(SRC:.c=.lst) $(ASRC:.S=.lst) 
+
+# ---------------------------------------------------------------------------
+
+# Definicje plików obiektowych bibliotek
+OBJLIB += $(SRCLIB:.c=.o)
+OBJLIB += $(ASRCLIB:.S=.o) 
+
+# ---------------------------------------------------------------------------
+
+# Scala wszystkie opcje i prze³¹czniki. Dodaje typ procesora.
+ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS)
+ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+
+# ---------------------------------------------------------------------------
+
+# Domyœlne wywo³anie
+all: begin sizebefore \
+counter \
+create_obj_dir \
+$(TARGET).elf \
+$(TARGET).lss \
+$(TARGET).hex \
+$(TARGET).eep \
+$(TARGET).cof \
+copy_elf \
+sizeafter finished end
+
+DIRE =deryk3/perty.h
+DIRE2 = $(DIRE:%/.h=%.i)
+
+
+# ---------------------------------------------------------------------------
+# Wyœwietlanie tekstów.
+begin:
+	@$(BEGIN)
+
+finished:
+	@$(FINISH)
+
+end:
+	@$(END)
+
+copy_elf:
+	$(COPY) $(TARGET).elf $(TARG).elf
+	@$(END)
+	@echo -** $(dir $(SRC_FOLDER))
+
+
+create_obj_dir:
+#	@sh "scr.sh"
+#	@cp -rp  $(SRC_FOLDER) $(OBJ_FOLDER) 
+#	@find $(SRC_FOLDER) -type d | xargs -i mkdir {} $(OBJ_FOLDER)
+#	@if [ ! -d kke ];	then	mkdir kke3; fi;
+
+
+
+# ---------------------------------------------------------------------------
+
+# Wyœwietla rozmiar kodu wynikowego
+sizebefore:
+	@if [ -f $(TARGET).elf ]; then echo Size before:; $(ELFSIZE);fi
+
+sizeafter:
+	@if [ -f $(TARGET).elf ]; then echo Size after:; $(ELFSIZE);fi
+
+# ---------------------------------------------------------------------------
+
+# Wyœwietla informacjê na temat wersji kompilatora
+gccversion : 
+	$(CC) --version
+
+# ---------------------------------------------------------------------------
+
+# Licznik kompilacji
+counter:
+	@sh "$(USRLIB)/counter.sh"
+
+# ---------------------------------------------------------------------------
+# Konwersja ELF na COFF dla symulacji w AVR Studio
+
+COFFCONVERT=$(OBJCOPY) --debugging \
+	--change-section-address .data-0x800000 \
+	--change-section-address .bss-0x800000 \
+	--change-section-address .noinit-0x800000 \
+	--change-section-address .eeprom-0x810000 
+
+
+
+%.cof: %.elf
+	$(COFFCONVERT) -O $(COFFOUT) $< $@
+
+# ---------------------------------------------------------------------------
+
+# Tworzy pliki wynikowe (.hex, .eep) z pliku ELF.
+%.hex: %.elf
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
+
+%.eep: %.elf
+	$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O  ihex $< $@
+
+# ---------------------------------------------------------------------------
+
+# Deasemblacja: Tworzy rozszerzony listing z pliku ELF.
+%.lss: %.elf
+	$(OBJDUMP) -h -S $< > $@
+
+# ---------------------------------------------------------------------------
+
+# Konsolidacja: tworzy plik ELF z plików objektowych.
+%.elf : $(OBJE);
+	$(CC) -mmcu=$(MCU) $(OBJE) $(LDFLAGS) --output $@
+
+
+
+# ---------------------------------------------------------------------------
+
+# Asemblacja: tworzy pliki objektowe z plików Ÿród³owych asemblera.
+$(OBJ_FOLDER)/%.o : $(SRC_FOLDER)/%.S
+	$(CC) -c $(ALL_ASFLAGS) $< -o $@
+
+# ---------------------------------------------------------------------------
+
+# Kompilacja: tworzy pliki objektowe z plików Ÿród³owych C.
+$(OBJ_FOLDER)/%.o : $(SRC_FOLDER)/%.c
+	$(CC) -c $(ALL_CFLAGS) $< -o $@
+
+# ---------------------------------------------------------------------------
+
+ Kompilacja: tworzy pliki asemblera z plików Ÿród³owych C.
+$(OBJ_FOLDER)/%.s : $(SRC_FOLDER)/%.c
+	$(CC) -S $(ALL_CFLAGS) $< -o $@
+
+# ---------------------------------------------------------------------------
+
+# Tworzenie pliku biblioteki u¿ytkownika dla projektu
+%.a : $(OBJLIB)
+	$(AR) rc $@ $?
+
+# ---------------------------------------------------------------------------
+#pokazuje wielkosc - dodane przezemnie
+
+#size: ${TARGET}
+#	@echo
+#	@avr-size -C --mcu=${MCU} ${TARGET}
+#----------------------------------------------------------------------------
+
+# Czyœci projekt.
+clean: begin clean_list finished end
+
+clean_list :
+#	$(REMOVE) $(SRC:.c=.s)
+#	$(REMOVE) $(SRCLIB:.c=.s)
+#	$(REMOVE) $(SRCLIB:.c=.lst)
+#	$(REMOVE) $(ASRCLIB:.S=.lst)
+#	$(REMOVE) $(OBJLIB:.o=.lst)
+#	$(REMOVE) $(OBJLIB)
+#	$(REMOVE) $(OBJ)
+#	$(REMOVE) $(LST)
+	$(REMOVE) $(TARGET).a
+	$(REMOVE) $(TARGET).hex
+	$(REMOVE) $(TARGET).eep
+	$(REMOVE) $(TARGET).obj
+	$(REMOVE) $(TARGET).cof
+	$(REMOVE) $(TARGET).elf
+	$(REMOVE) $(TARGET).map
+	$(REMOVE) $(TARGET).a90
+	$(REMOVE) $(TARGET).sym
+	$(REMOVE) $(TARGET).lnk
+	$(REMOVE) $(TARGET).lss
+	$(REMOVE) $(TARG).elf
+# ---------------------------------------------------------------------------
+
+# Programowanie uk³adu w systemie
+
+program: begin install end
+
+install: all
+	avrdude -p $(MCU) -c $(PROG) -U flash:w:$(TARGET).hex -U eeprom:w:$(TARGET).eep
+
+# ---------------------------------------------------------------------------
+
+# Zale¿noœci
+$(TARGET).o : $(TARGET).c $(TARGET).a config.h

@@ -1,0 +1,9 @@
+SRCLIB	+= $(USRLIB)/adc/convert_10bit.c
+SRCLIB	+= $(USRLIB)/adc/convert_8bit.c
+SRCLIB	+= $(USRLIB)/adc/init.c
+SRCLIB	+= $(USRLIB)/adc/is_complete.c
+SRCLIB	+= $(USRLIB)/adc/off.c
+SRCLIB	+= $(USRLIB)/adc/set_channel.c
+SRCLIB	+= $(USRLIB)/adc/set_prescaler.c
+SRCLIB	+= $(USRLIB)/adc/set_reference.c
+SRCLIB	+= $(USRLIB)/adc/start_convert.c

@@ -1,0 +1,6 @@
+include $(USRLIB)/delay/sources
+
+SRCLIB += $(USRLIB)/i2c/read.c
+SRCLIB += $(USRLIB)/i2c/start.c
+SRCLIB += $(USRLIB)/i2c/stop.c
+SRCLIB += $(USRLIB)/i2c/write.c

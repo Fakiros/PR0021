@@ -1,0 +1,7 @@
+SRCLIB	+= $(USRLIB)/conv/bcd2bin.c
+SRCLIB	+= $(USRLIB)/conv/bin2bcd.c
+SRCLIB	+= $(USRLIB)/conv/byte2dec.c
+SRCLIB	+= $(USRLIB)/conv/byte2hex.c
+SRCLIB	+= $(USRLIB)/conv/nibble2hex.c
+SRCLIB	+= $(USRLIB)/conv/word2hex.c
+SRCLIB	+= $(USRLIB)/conv/int2dec.c

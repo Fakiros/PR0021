@@ -1,0 +1,24 @@
+include $(USRLIB)/conv/sources
+include $(USRLIB)/delay/sources
+
+SRCLIB += $(USRLIB)/lcd/clear.c
+SRCLIB += $(USRLIB)/lcd/clock.c
+SRCLIB += $(USRLIB)/lcd/defchars_P.c
+SRCLIB += $(USRLIB)/lcd/init.c
+SRCLIB += $(USRLIB)/lcd/PL_chars_init.c
+SRCLIB += $(USRLIB)/lcd/progressbar.c
+SRCLIB += $(USRLIB)/lcd/progressbar_init.c
+SRCLIB += $(USRLIB)/lcd/putchar.c
+SRCLIB += $(USRLIB)/lcd/putcharxy.c
+SRCLIB += $(USRLIB)/lcd/putint.c
+SRCLIB += $(USRLIB)/lcd/putstr.c
+SRCLIB += $(USRLIB)/lcd/putstr_E.c
+SRCLIB += $(USRLIB)/lcd/putstr_P.c
+SRCLIB += $(USRLIB)/lcd/putstrxy.c
+SRCLIB += $(USRLIB)/lcd/putU08.c
+SRCLIB += $(USRLIB)/lcd/puthexU08.c
+SRCLIB += $(USRLIB)/lcd/puthexU16.c
+SRCLIB += $(USRLIB)/lcd/send.c
+SRCLIB += $(USRLIB)/lcd/send_0.c
+SRCLIB += $(USRLIB)/lcd/send_1.c
+SRCLIB += $(USRLIB)/lcd/xy.c

@@ -1,0 +1,7 @@
+SRCLIB	+= $(USRLIB)/delay/delay10us.c
+SRCLIB	+= $(USRLIB)/delay/delay20us.c
+SRCLIB	+= $(USRLIB)/delay/delay.c
+#SRCLIB	+= $(USRLIB)/delay/delayms.c
+#SRCLIB	+= $(USRLIB)/delay/delayus.c
+
+

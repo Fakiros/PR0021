@@ -1,0 +1,13 @@
+include $(USRLIB)/delay/sources
+
+SRCLIB	+= $(USRLIB)/onewire/bit_io.c
+SRCLIB	+= $(USRLIB)/onewire/byte_rd.c
+SRCLIB	+= $(USRLIB)/onewire/byte_wr.c
+SRCLIB	+= $(USRLIB)/onewire/command.c
+SRCLIB	+= $(USRLIB)/onewire/crc8.c
+SRCLIB	+= $(USRLIB)/onewire/input_pin_state.c
+SRCLIB	+= $(USRLIB)/onewire/parasite_disable.c
+SRCLIB	+= $(USRLIB)/onewire/parasite_enable.c
+SRCLIB	+= $(USRLIB)/onewire/reset.c
+SRCLIB	+= $(USRLIB)/onewire/rom_search.c
+SRCLIB	+= $(USRLIB)/onewire/set_bus.c

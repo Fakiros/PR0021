@@ -1,0 +1,2 @@
+SRCLIB += $(USRLIB)/usbdrv/usbdrv.c 
+ASRCLIB += $(USRLIB)/usbdrv/usbdrvasm.S

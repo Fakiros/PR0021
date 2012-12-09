@@ -1,0 +1,5 @@
+SRCLIB	+= $(USRLIB)/ps2kbd/init.c
+SRCLIB	+= $(USRLIB)/ps2kbd/decode.c
+SRCLIB	+= $(USRLIB)/ps2kbd/getchar.c
+SRCLIB	+= $(USRLIB)/ps2kbd/put_buff.c
+SRCLIB	+= $(USRLIB)/ps2kbd/scancodes.c
